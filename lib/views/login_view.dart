@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/widgets/custom_textfield.dart';
 import 'package:mynotes/widgets/toast_helper.dart';
@@ -79,7 +80,7 @@ class _LoginViewState extends State<LoginView> {
                         ToastHelper.showToast('Đăng nhập thành công!');
                         // ignore: use_build_context_synchronously
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/notes/',
+                          notesRoute,
                           (route) => false,
                         );
                         devtools.log(userCredential.toString());
@@ -109,7 +110,7 @@ class _LoginViewState extends State<LoginView> {
                   FilledButton(
                     onPressed: () {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/register/', (route) => false);
+                          registerRoute, (route) => false);
                     },
                     child: const Text('ĐĂNG KÍ'),
                   )
