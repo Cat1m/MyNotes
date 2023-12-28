@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# MyNotes
-=======
 # mynotes
 
 A new Flutter project.
