@@ -76,6 +76,7 @@ class _RegisterViewState extends State<RegisterView> {
                           email: email,
                           password: password,
                         );
+                        // ignore: use_build_context_synchronously
                         Navigator.of(context).pushNamed(verifyEmailRoute);
                         ToastHelper.showToast('Đăng kí thành công!');
                       } on FirebaseAuthException catch (e) {
