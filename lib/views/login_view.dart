@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/widgets/custom_textfield.dart';
+import 'package:mynotes/widgets/show_error_dialog.dart';
 import 'package:mynotes/widgets/toast_helper.dart';
 import 'dart:developer' as devtools show log;
 
@@ -96,13 +97,25 @@ class _LoginViewState extends State<LoginView> {
                             errorMessage = 'Email không hợp lệ';
                             break;
                           case 'invalid-credential':
+                            // ignore: use_build_context_synchronously
+                            await showErrorDialog(
+                              context,
+                              "Thông tin đăng nhập không chính xác\nVui lòng kiểm tra lại",
+                            );
                             errorMessage =
                                 'Thông tin đăng nhập không chính xác\nVui lòng kiểm tra lại';
                             break;
                           default:
-                            errorMessage = "Kiểm tra lại thông tin";
+                            errorMessage = "Lỗi ${e.code}";
                         }
                         ToastHelper.showToast(errorMessage);
+                      } catch (e) {
+                        devtools.log(e.toString());
+                        // ignore: use_build_context_synchronously
+                        await showErrorDialog(
+                          context,
+                          e.toString(),
+                        );
                       }
                     },
                     child: const Text('ĐĂNG NHẬP'),
