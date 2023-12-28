@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/firebase_options.dart';
 import 'package:mynotes/widgets/custom_textfield.dart';
+import 'package:mynotes/widgets/show_error_dialog.dart';
 import 'package:mynotes/widgets/toast_helper.dart';
 
 class RegisterView extends StatefulWidget {
@@ -70,13 +71,12 @@ class _RegisterViewState extends State<RegisterView> {
                       final email = _email.text;
                       final password = _password.text;
                       try {
-                        final userCredential = await FirebaseAuth.instance
+                        await FirebaseAuth.instance
                             .createUserWithEmailAndPassword(
                           email: email,
                           password: password,
                         );
-                        // ignore: avoid_print
-                        print(userCredential);
+                        Navigator.of(context).pushNamed(verifyEmailRoute);
                         ToastHelper.showToast('Đăng kí thành công!');
                       } on FirebaseAuthException catch (e) {
                         String errorMessage;
@@ -91,9 +91,15 @@ class _RegisterViewState extends State<RegisterView> {
                             errorMessage = "Email không hợp lệ";
                             break;
                           default:
-                            errorMessage = "Kiểm tra lại thông tin";
+                            errorMessage = "Lỗi ${e.code}";
                         }
                         ToastHelper.showToast(errorMessage);
+                      } catch (e) {
+                        // ignore: use_build_context_synchronously
+                        await showErrorDialog(
+                          context,
+                          e.toString(),
+                        );
                       }
                     },
                     child: const Text('ĐĂNG KÍ'),
