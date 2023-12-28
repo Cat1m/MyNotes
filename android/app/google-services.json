@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "324035854660",
+    "project_id": "chien-notes",
+    "storage_bucket": "chien-notes.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324035854660:android:a9722a90042ce03e491711",
+        "android_client_info": {
+          "package_name": "com.catim.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuhK1gkGV_GBPjvNI8MmJyBp3xBoACe5Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
