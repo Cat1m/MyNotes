@@ -86,7 +86,7 @@ class _LoginViewState extends State<LoginView> {
               } on WrongPasswordAuthException {
                 await showErrorDialog(
                   context,
-                  'sai nhật khẩu',
+                  'Sai thông tin đăng nhập\nVui lòng kiểm tra lại',
                 );
               } on GenericAuthException {
                 await showErrorDialog(
