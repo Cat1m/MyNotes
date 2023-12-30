@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:mynotes/constants/routes.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VerifyEmailView extends StatefulWidget {
@@ -37,8 +38,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           const Gap(10),
           FilledButton(
             onPressed: () async {
-              final user = FirebaseAuth.instance.currentUser;
-              await user?.sendEmailVerification();
+              await AuthService.firebase().sendEmailVerification();
             },
             child: const Text('Gửi lại mail xác thực'),
           ),
@@ -50,7 +50,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           const Gap(10),
           FilledButton(
             onPressed: () async {
-              await FirebaseAuth.instance.signOut();
+              await AuthService.firebase().logOut();
+
               Navigator.of(context).pushNamedAndRemoveUntil(
                 loginRoute,
                 (route) => false,
@@ -61,7 +62,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           const Gap(10),
           FilledButton(
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
+                await AuthService.firebase().logOut();
                 Navigator.of(context).pushNamedAndRemoveUntil(
                   registerRoute,
                   (route) => false,

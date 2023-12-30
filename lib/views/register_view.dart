@@ -1,12 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:mynotes/constants/routes.dart';
-import 'package:mynotes/firebase_options.dart';
+import 'package:mynotes/services/auth/auth_exceptions.dart';
+import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/widgets/custom_textfield.dart';
 import 'package:mynotes/widgets/show_error_dialog.dart';
-import 'package:mynotes/widgets/toast_helper.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -41,86 +41,64 @@ class _RegisterViewState extends State<RegisterView> {
         title: const Text('ĐĂNG KÍ'),
         centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            // case ConnectionState.none:
-            // case ConnectionState.waiting:
-            // case ConnectionState.active:
-            case ConnectionState.done:
-              return Column(
-                children: [
-                  const Gap(10),
-                  CustomTextField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: _email,
-                    hintText: 'Nhập email',
-                  ),
-                  CustomTextField(
-                    enableSuggestions: false,
-                    autoCorrect: false,
-                    obscureText: true,
-                    controller: _password,
-                    hintText: 'Nhập mật khẩu',
-                  ),
-                  FilledButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
-                      try {
-                        await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-                        // ignore: use_build_context_synchronously
-                        Navigator.of(context).pushNamed(verifyEmailRoute);
-                        ToastHelper.showToast('Đăng kí thành công!');
-                      } on FirebaseAuthException catch (e) {
-                        String errorMessage;
-                        switch (e.code) {
-                          case 'weak-password':
-                            errorMessage = "Mật khẩu yếu";
-                            break;
-                          case 'email-already-in-use':
-                            errorMessage = "Email đã được sử dụng";
-                            break;
-                          case "invalid-email":
-                            errorMessage = "Email không hợp lệ";
-                            break;
-                          default:
-                            errorMessage = "Lỗi ${e.code}";
-                        }
-                        ToastHelper.showToast(errorMessage);
-                      } catch (e) {
-                        // ignore: use_build_context_synchronously
-                        await showErrorDialog(
-                          context,
-                          e.toString(),
-                        );
-                      }
-                    },
-                    child: const Text('ĐĂNG KÍ'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        loginRoute,
-                        (route) => false,
-                      );
-                    },
-                    child: const Text('Bạn đã có tài khoảng! đi đến đăng nhập'),
-                  )
-                ],
+      body: Column(
+        children: [
+          const Gap(10),
+          CustomTextField(
+            keyboardType: TextInputType.emailAddress,
+            controller: _email,
+            hintText: 'Nhập email',
+          ),
+          CustomTextField(
+            enableSuggestions: false,
+            autoCorrect: false,
+            obscureText: true,
+            controller: _password,
+            hintText: 'Nhập mật khẩu',
+          ),
+          FilledButton(
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
+              try {
+                await AuthService.firebase()
+                    .createUser(email: email, password: password);
+                AuthService.firebase().sendEmailVerification();
+                Navigator.of(context).pushNamed(verifyEmailRoute);
+              } on WeakPasswordAuthException {
+                await showErrorDialog(
+                  context,
+                  'Weak password',
+                );
+              } on EmailAlreadyAndUseAuthException {
+                await showErrorDialog(
+                  context,
+                  'Email is already in use',
+                );
+              } on InvalidEmailAuthException {
+                await showErrorDialog(
+                  context,
+                  'This is an invalid email address',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(
+                  context,
+                  'Failed to register',
+                );
+              }
+            },
+            child: const Text('ĐĂNG KÍ'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                loginRoute,
+                (route) => false,
               );
-            //dùng defaulf để xử lí các case còn lại
-            default:
-              return const Center(child: Text("Đang tải..."));
-          }
-        },
+            },
+            child: const Text('Bạn đã có tài khoảng! đi đến đăng nhập'),
+          )
+        ],
       ),
     );
   }
